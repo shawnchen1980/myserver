@@ -2,6 +2,7 @@ const morgan =require('morgan')
 const bodyParser = require('body-parser')
 const express =require('express')
 const http =require ('http')
+const passport = require('passport')
 const app = express()
 const router = require("./router")
 const mongoose = require("mongoose")
@@ -26,7 +27,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 //bodyParser = require('body-parser').json();
 app.use(cors());
+app.use(passport.initialize());
 router(app);
+app.use('/portal',express.static(__dirname+"\\public"))
 // app.post('/itemSearch', bodyParser.json(), function(req, res) {
 //   //var Keywords = req.body.Keywords;
 //   console.log("Yoooooo");
@@ -40,3 +43,4 @@ const server = http.createServer(app)
 server.listen(3030)
 
 console.log("server started at 3030")
+ 

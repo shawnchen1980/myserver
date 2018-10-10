@@ -4,8 +4,11 @@ const Schema = mongoose.Schema
 
 //define our model
 const userSchema = new Schema({
-	email:{type:String,unique:true,lowercase: true},
-	password:String
+	email:{type:String,lowercase: true},
+	password:String,
+	origin:String,
+	originId:String,
+	title:String
 })
 
 //userSchema.preSave()

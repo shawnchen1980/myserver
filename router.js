@@ -1,18 +1,24 @@
 const signup=require('./controllers/auth').signup
 const signin=require('./controllers/auth').signin
+const addNewQuestion = require('./controllers/question').addNewQuestion;
 const passportService = require('./services/passport')
 const passport = require('passport')
 
 const requireAuth = passport.authenticate('jwt',{session:false})
 const requireLocalAuth = passport.authenticate('local',{session:false})
-
+const googleAuthStep1 = passport.authenticate('google', { session:false,scope: ['https://www.googleapis.com/auth/plus.login'] })
+const googleAuthStep2 = passport.authenticate('google', { session:false,failureRedirect: '/login' });
 
 module.exports = (app)=>{
 	app.get("/",requireAuth,function(req,res){
-		res.json({iat:req.user.iat})
+		//res.json({iat:req.user.iat})
+		res.json({user:req.user,iat:req.user.iat})
 	})
+	app.post("/addNewQuestion",requireAuth,addNewQuestion);
 	app.post("/signin",requireLocalAuth,signin)
-	app.post("/signup",signup)
+	app.post("/signup",signup);
+	app.get('/auth/google',googleAuthStep1);
+	app.get('/oauth2callback',googleAuthStep2,signin)
 }
 //数据流的顺序是index.js->router.js->services/passport.js->controllers/auth.js
 //router.js拿到index.js传过来的app实例，要为其加载request handler，但要保证req handler收到的

@@ -2,9 +2,10 @@ const passport =require('passport')
 const User = require('../models/user')
 const config = require('../config')
 const JwtStrategy = require('passport-jwt').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local')
-
+const tokenForUser = require('../controllers/auth').tokenForUser;
 const localOptions ={usernameField:'email'}
 
 const localLogin = new LocalStrategy(localOptions,function(email,password,done){
@@ -50,5 +51,41 @@ const jwtLogin= new JwtStrategy(jwtOptions,function(payload,done){
 		}
 	})
 })
+const googleLogin = new GoogleStrategy({
+    clientID: "159044113885-9tkitaa6t39uu5lr5bt9d3f88pup3k5i.apps.googleusercontent.com",
+    clientSecret: "W7I0g17b47DVNBxSl18cYpos",
+    callbackURL: "http://localhost:3030/oauth2callback",
+    proxy:true
+  },
+  function(accessToken, refreshToken, profile, done) {
+    //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    //     return done(err, user);
+	//   });
+	User.findOne({origin:"google",originId:profile.id},function(err,one){
+		if(err) {return done(err,false);}
+		if(one) {
+			//return res.status(422).send({error:'Email is in use'})
+			return done(null,one);
+			
+		}
+		else {
+			const user = new User({origin:'google',originId:profile.id,title:profile.displayName})
+			user.save((err)=>{
+				if(err) {return done(err,false)}
+				return done(null,user)
+				//res.json({token:tokenForUser(user),email,title:email})
+			})
+			//return done(null,false);
+		}
+	})
+    console.log('第一步：浏览器访问服务器/auth/google，被转向google进行身份认证')
+    console.log('第二步：身份验证成功后，浏览器被google重定向至服务器/oauth2callback')
+    console.log('第三步：服务器从浏览器处获取授权码，服务器用授权码访问google成功获取用户信息和accesstoken，程序进入googlestrategy定义的函数')
+    console.log('在googlestrategy中，根据用户id从自建数据库中查到或建立用户信息，通过done函数返回用户对象user')
+    console.log('profile',profile);
+    //return done(null,{username:profile.id,password:666})
+  }
+);
 passport.use(jwtLogin)
-passport.use(localLogin) 
+passport.use(localLogin)
+passport.use(googleLogin) 

@@ -3,27 +3,36 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "npm-run-all --parallel localMongod  localServer",
+    "localMongod": "mongod",
+    "localServer": "nodemon index.js"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
+    "cookie-session": "^2.0.0-beta.3",
     "cors": "^2.8.4",
     "debug": "~2.6.3",
     "express": "~4.15.2",
+    "express-session": "^1.15.6",
+    "faker": "^4.1.0",
     "jade": "~1.11.0",
     "jwt-simple": "^0.5.1",
     "mongoose": "^4.11.12",
     "morgan": "~1.8.1",
     "nodemon": "^1.12.1",
     "passport": "^0.4.0",
+    "passport-google-oauth": "^1.0.0",
+    "passport-google-oauth20": "^1.0.0",
     "passport-jwt": "^3.0.0",
     "passport-local": "^1.0.0",
     "serve-favicon": "~2.4.2",
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
+    "https-proxy-agent": "^2.2.0",
+    "npm-run-all": "^4.1.2",
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^1.12.2"
   }
